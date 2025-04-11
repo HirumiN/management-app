@@ -1,10 +1,34 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
-import { Head, Link } from "@inertiajs/react";
+import { Head, Link, router } from "@inertiajs/react";
 import Pagination from "@/Components/Pagination";
 import { PROJECT_STATUS_CLASS_MAP, PROJECT_STATUS_TEXT_MAP } from "@/constants";
+import TextInput from "@/Components/TextInput";
+import SelectInput from "@/Components/SelectInput";
 
-export default function Index({ auth, projects }) {
+export default function Index({ auth, projects, queryParams = null }) {
+  queryParams = queryParams || {};
+  const searchFieldChanged = (name, value) => {
+    if (value) {
+      // Jika ada nilai (value) yang dimasukkan, tambahkan ke queryParams
+      queryParams[name] = value;
+    } else {
+      // Jika tidak ada nilai (misalnya input dikosongkan), hapus key dari queryParams
+      delete queryParams[name];
+    }
+
+    router.get(route('project.index'), queryParams)
+  };
+
+  const onKeyPress = (name, e) => {
+    // Jika tombol yang ditekan adalah 'Enter', maka lakukan pencarian
+    if (e.key === "Enter") {
+      // Update queryParams dengan nilai input jika tombol 'Enter' ditekan
+      searchFieldChanged(name, e.target.value);
+    }
+  };
+
+
   return (
     <AuthenticatedLayout
       user={auth.user}
@@ -33,6 +57,46 @@ export default function Index({ auth, projects }) {
                     <th className="px-6 py-4">Actions</th>
                   </tr>
                 </thead>
+                <thead className="text-xs text-gray-700 uppercase bg-gray-100 dark:text-gray-300 dark:bg-gray-700">
+                  <tr>
+                    <th className="px-6 py-4"></th>
+                    <th className="px-6 py-4"></th>
+                    <th className="px-6 py-4">
+                      <TextInput
+                        className="w-full "
+                        defaultValue={queryParams.name}
+                        placeholder="Project Name"
+                        onBlur={(e) =>
+                          // Saat kehilangan fokus, kita kirim data ke fungsi `searchFieldChanged`
+                          // untuk cari proyek berdasarkan nama yang sudah diketik
+                          searchFieldChanged("name", e.target.value)
+                        }
+                        onKeyPress={(e) =>
+                          // Saat tombol dipencet, kita kirim nama field 'name' dan event key-nya
+                          onKeyPress("name", e)
+                        }
+                      />
+                    </th>
+                    <th className="px-6 py-4">
+                      <SelectInput
+                        className="w-full"
+                        defaultValue={queryParams.status}
+                        onChange={(e) =>
+                          searchFieldChanged("status", e.target.value)
+                        }
+                      >
+                        <option value="">Select Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="in_progress">In Progress</option>
+                        <option value="completed">Completed</option>
+                      </SelectInput>
+                    </th>
+                    <th className="px-6 py-4"></th>
+                    <th className="px-6 py-4"></th>
+                    <th className="px-6 py-4"></th>
+                    <th className="px-6 py-4"></th>
+                  </tr>
+                </thead>
                 <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                   {projects.data.map((project) => (
                     <tr
@@ -54,7 +118,10 @@ export default function Index({ auth, projects }) {
                       </td>
                       <td className="px-6 py-4">
                         <span
-                          className={"px-3 py-1 rounded-full text-xs font-medium " + PROJECT_STATUS_CLASS_MAP[project.status]}
+                          className={
+                            "px-3 py-1 rounded-full text-xs font-medium " +
+                            PROJECT_STATUS_CLASS_MAP[project.status]
+                          }
                         >
                           {PROJECT_STATUS_TEXT_MAP[project.status]}
                         </span>
@@ -91,7 +158,7 @@ export default function Index({ auth, projects }) {
                   ))}
                 </tbody>
               </table>
-              <Pagination links={projects.meta.links}/>
+              <Pagination links={projects.meta.links} />
             </div>
           </div>
         </div>
