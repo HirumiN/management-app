@@ -1,17 +1,18 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import {
+
   MoreHorizontal,
   Pencil,
   Trash2,
 } from "lucide-react";
 import { Head, Link, router } from "@inertiajs/react";
 import Pagination from "@/Components/Pagination";
-import { PROJECT_STATUS_CLASS_MAP, PROJECT_STATUS_TEXT_MAP } from "@/constants";
+import { TASK_STATUS_CLASS_MAP, TASK_STATUS_TEXT_MAP } from "@/constants";
 import TextInput from "@/Components/TextInput";
 import SelectInput from "@/Components/SelectInput";
 import SortableHeader from "@/Components/SortableHeader";
 
-export default function Index({ auth, projects, queryParams = null }) {
+export default function Index({ auth, tasks, queryParams = null }) {
   queryParams = queryParams || {};
   const searchFieldChanged = (name, value) => {
     if (value) {
@@ -22,7 +23,7 @@ export default function Index({ auth, projects, queryParams = null }) {
       delete queryParams[name];
     }
 
-    router.get(route("project.index"), queryParams);
+    router.get(route("task.index"), queryParams);
   };
 
   const onKeyPress = (name, e) => {
@@ -44,7 +45,7 @@ export default function Index({ auth, projects, queryParams = null }) {
       queryParams.sort_field = name;
       queryParams.sort_order = "asc";
     }
-    router.get(route("project.index"), queryParams);
+    router.get(route("task.index"), queryParams);
   };
 
   return (
@@ -52,11 +53,11 @@ export default function Index({ auth, projects, queryParams = null }) {
       user={auth.user}
       header={
         <h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-          Projects
+          Tasks
         </h2>
       }
     >
-      <Head title="Projects" />
+      <Head title="Tasks" />
 
       <div className="py-12">
         <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
@@ -120,7 +121,7 @@ export default function Index({ auth, projects, queryParams = null }) {
                         <TextInput
                           className="w-full "
                           defaultValue={queryParams.name}
-                          placeholder="Project Name"
+                          placeholder="Task Name"
                           onBlur={(e) =>
                             // Saat kehilangan fokus, kita kirim data ke fungsi `searchFieldChanged`
                             // untuk cari proyek berdasarkan nama yang sudah diketik
@@ -153,53 +154,53 @@ export default function Index({ auth, projects, queryParams = null }) {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                    {projects.data.map((project) => (
+                    {tasks.data.map((task) => (
                       <tr
-                        key={project.id}
+                        key={task.id}
                         className="transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/50"
                       >
                         <td className="px-6 py-4 font-medium text-gray-900 dark:text-gray-100">
-                          {project.id}
+                          {task.id}
                         </td>
                         <td className="px-6 py-4">
                           <img
-                            src={project.image_path}
-                            alt={project.name}
+                            src={task.image_path}
+                            alt={task.name}
                             className="object-cover w-10 h-10 rounded-full ring-2 ring-gray-200 dark:ring-gray-700"
                           />
                         </td>
                         <td className="px-6 py-4 font-medium text-gray-900 dark:text-gray-100">
-                          {project.name}
+                          {task.name}
                         </td>
                         <td className="px-6 py-4">
                           <span
                             className={
                               "px-3 py-1 rounded-full text-xs font-medium " +
-                              PROJECT_STATUS_CLASS_MAP[project.status]
+                              TASK_STATUS_CLASS_MAP[task.status]
                             }
                           >
-                            {PROJECT_STATUS_TEXT_MAP[project.status]}
+                            {TASK_STATUS_TEXT_MAP[task.status]}
                           </span>
                         </td>
                         <td className="px-6 py-4 text-gray-600 dark:text-gray-400">
-                          {project.created_at}
+                          {task.created_at}
                         </td>
                         <td className="px-6 py-4 text-gray-600 dark:text-gray-400">
-                          {project.due_date}
+                          {task.due_date}
                         </td>
                         <td className="px-6 py-4 text-gray-600 dark:text-gray-400">
-                          {project.createdBy.name}
+                          {task.createdBy.name}
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
                             <Link
-                              href={route("project.edit", project.id)}
+                              href={route("task.edit", task.id)}
                               className="text-gray-600 transition-colors dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
                             >
                               <Pencil size={18} />
                             </Link>
                             <Link
-                              href={route("project.destroy", project.id)}
+                              href={route("task.destroy", task.id)}
                               className="text-gray-600 transition-colors dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400"
                             >
                               <Trash2 size={18} />
@@ -214,7 +215,7 @@ export default function Index({ auth, projects, queryParams = null }) {
                   </tbody>
                 </table>
               </div>
-              <Pagination links={projects.meta.links} />
+              <Pagination links={tasks.meta.links} />
             </div>
           </div>
         </div>
