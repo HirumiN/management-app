@@ -1,9 +1,5 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import {
-  MoreHorizontal,
-  Pencil,
-  Trash2,
-} from "lucide-react";
+import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { Head, Link, router } from "@inertiajs/react";
 import Pagination from "@/Components/Pagination";
 import { PROJECT_STATUS_CLASS_MAP, PROJECT_STATUS_TEXT_MAP } from "@/constants";
@@ -73,7 +69,7 @@ export default function Index({ auth, projects, queryParams = null }) {
                         currentSortOrder={queryParams.sort_order}
                         onSort={sortChanged}
                       />
-                      <th className="px-6 py-4">Image</th>
+                      <th className="px-6 py-2">Image</th>
 
                       <SortableHeader
                         label="Name"
@@ -108,15 +104,15 @@ export default function Index({ auth, projects, queryParams = null }) {
                         onSort={sortChanged}
                       />
 
-                      <th className="px-6 py-4">Created By</th>
-                      <th className="px-6 py-4">Actions</th>
+                      <th className="px-6 py-2">Created By</th>
+                      <th className="px-6 py-2">Actions</th>
                     </tr>
                   </thead>
                   <thead className="text-xs text-gray-700 uppercase bg-gray-100 dark:text-gray-300 dark:bg-gray-700">
                     <tr>
-                      <th className="px-6 py-4"></th>
-                      <th className="px-6 py-4"></th>
-                      <th className="px-6 py-4">
+                      <th className="px-6 py-2"></th>
+                      <th className="px-6 py-2"></th>
+                      <th className="px-6 py-2">
                         <TextInput
                           className="w-full "
                           defaultValue={queryParams.name}
@@ -132,7 +128,7 @@ export default function Index({ auth, projects, queryParams = null }) {
                           }
                         />
                       </th>
-                      <th className="px-6 py-4">
+                      <th className="px-6 py-2">
                         <SelectInput
                           className="w-full"
                           defaultValue={queryParams.status}
@@ -146,10 +142,10 @@ export default function Index({ auth, projects, queryParams = null }) {
                           <option value="completed">Completed</option>
                         </SelectInput>
                       </th>
-                      <th className="px-6 py-4"></th>
-                      <th className="px-6 py-4"></th>
-                      <th className="px-6 py-4"></th>
-                      <th className="px-6 py-4"></th>
+                      <th className="px-6 py-2"></th>
+                      <th className="px-6 py-2"></th>
+                      <th className="px-6 py-2"></th>
+                      <th className="px-6 py-2"></th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -158,20 +154,20 @@ export default function Index({ auth, projects, queryParams = null }) {
                         key={project.id}
                         className="transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/50"
                       >
-                        <td className="px-6 py-4 font-medium text-gray-900 dark:text-gray-100">
+                        <td className="px-6 py-2 font-medium text-gray-900 dark:text-gray-100">
                           {project.id}
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-6 py-2">
                           <img
                             src={project.image_path}
                             alt={project.name}
                             className="object-cover w-10 h-10 rounded-full ring-2 ring-gray-200 dark:ring-gray-700"
                           />
                         </td>
-                        <td className="px-6 py-4 font-medium text-gray-900 dark:text-gray-100">
-                          {project.name}
+                        <td className="px-6 py-2 font-medium text-gray-900 dark:text-gray-100 hover:underline">
+                          <Link href={route("project.show", project.id)}>{project.name}</Link>
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-6 py-2">
                           <span
                             className={
                               "px-3 py-1 rounded-full text-xs font-medium " +
@@ -181,16 +177,16 @@ export default function Index({ auth, projects, queryParams = null }) {
                             {PROJECT_STATUS_TEXT_MAP[project.status]}
                           </span>
                         </td>
-                        <td className="px-6 py-4 text-gray-600 dark:text-gray-400">
+                        <td className="px-6 py-2 text-gray-600 dark:text-gray-400">
                           {project.created_at}
                         </td>
-                        <td className="px-6 py-4 text-gray-600 dark:text-gray-400">
+                        <td className="px-6 py-2 text-gray-600 dark:text-gray-400">
                           {project.due_date}
                         </td>
-                        <td className="px-6 py-4 text-gray-600 dark:text-gray-400">
+                        <td className="px-6 py-2 text-gray-600 dark:text-gray-400">
                           {project.createdBy.name}
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-6 py-2">
                           <div className="flex items-center gap-3">
                             <Link
                               href={route("project.edit", project.id)}
