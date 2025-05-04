@@ -1,9 +1,4 @@
-import {
-
-  MoreHorizontal,
-  Pencil,
-  Trash2,
-} from "lucide-react";
+import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import Pagination from "@/Components/Pagination";
 import { TASK_STATUS_CLASS_MAP, TASK_STATUS_TEXT_MAP } from "@/constants";
 import TextInput from "@/Components/TextInput";
@@ -11,8 +6,7 @@ import SelectInput from "@/Components/SelectInput";
 import SortableHeader from "@/Components/SortableHeader";
 import { Link, router } from "@inertiajs/react";
 
-
-export default function TaskTable({ tasks, queryParams = null}) {
+export default function TaskTable({ tasks, queryParams = null }) {
   queryParams = queryParams || {};
 
   const searchFieldChanged = (name, value) => {
@@ -142,17 +136,19 @@ export default function TaskTable({ tasks, queryParams = null}) {
             {tasks.data.map((task) => (
               <tr
                 key={task.id}
-                className="transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                className="h-10 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/50"
               >
                 <td className="px-6 py-4 font-medium text-gray-900 dark:text-gray-100">
                   {task.id}
                 </td>
                 <td className="px-6 py-4">
-                  <img
-                    src={task.image_path}
-                    alt={task.name}
-                    className="object-cover w-10 h-10 rounded-full ring-2 ring-gray-200 dark:ring-gray-700"
-                  />
+                  {task.image_path ? (
+                    <img
+                      src={task.image_path}
+                      alt={task.name}
+                      className="object-cover w-10 h-10 rounded-full ring-2 ring-gray-200 dark:ring-gray-700"
+                    />
+                  ) : null}
                 </td>
                 <td className="px-6 py-4 font-medium text-gray-900 dark:text-gray-100">
                   {task.name}

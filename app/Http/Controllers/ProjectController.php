@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Inertia\Inertia;
 use App\Models\Project;
+use Illuminate\Support\Str;
 use App\Http\Resources\TaskResource;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\ProjectResource;
 use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
@@ -21,10 +23,10 @@ class ProjectController extends Controller
         $sortField = request("sort_field", 'created_at');
         $sortOrder = request("sort_order", 'desc');
 
-        if (request("name")){
+        if (request("name")) {
             $query->where("name", "like", "%" . request("name") . "%");
         }
-        if (request("status")){
+        if (request("status")) {
             $query->where("status", request("status"));
         }
 
@@ -32,6 +34,7 @@ class ProjectController extends Controller
         return inertia("Project/Index", [
             "projects" => ProjectResource::collection($projects),
             'queryParams' => request()->query() ?: null, //digunakan sebagai cek query ketika request seperti filter status = completed
+            "success" => session("success"),
         ]);
     }
 
@@ -40,7 +43,9 @@ class ProjectController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia("Project/Create", [
+            "project" => new ProjectResource(new Project()),
+        ]);
     }
 
     /**
@@ -48,7 +53,18 @@ class ProjectController extends Controller
      */
     public function store(StoreProjectRequest $request)
     {
-        //
+        $data = $request->validated();
+        /** @var $image \Illuminate\Http\UploadFIle */
+        // jika ada image, upload ke storage
+        $image = $data['image'] ?? null;
+        if ($image) {
+            $data['image_path'] = $image->store('project/' . Str::random(), 'public');
+
+        }
+        $data['created_by'] = Auth::id();
+        $data['updated_by'] = Auth::id();
+        Project::create($data);
+        return to_route('project.index')->with('success', 'Project created successfully');
     }
 
     /**
@@ -61,10 +77,10 @@ class ProjectController extends Controller
         $sortField = request("sort_field", 'created_at');
         $sortOrder = request("sort_order", 'desc');
 
-        if (request("name")){
+        if (request("name")) {
             $query->where("name", "like", "%" . request("name") . "%");
         }
-        if (request("status")){
+        if (request("status")) {
             $query->where("status", request("status"));
         }
         $tasks = $query->orderBy($sortField, $sortOrder)->paginate(10)->onEachSide(1);
@@ -72,7 +88,7 @@ class ProjectController extends Controller
             "project" => new ProjectResource($project),
             "tasks" => TaskResource::collection($tasks),
             'queryParams' => request()->query() ?: null,
-        ]) ;
+        ]);
     }
 
     /**
