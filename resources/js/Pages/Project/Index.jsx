@@ -44,6 +44,20 @@ export default function Index({ auth, projects, queryParams = null, success }) {
     router.get(route("project.index"), queryParams);
   };
 
+  const deleteProject = (e, project) => {
+    e.preventDefault();
+    if (confirm("Are you sure you want to delete this project?")) {
+      router.delete(route("project.destroy", project.id), {
+        preserveScroll: true,
+        onSuccess: () => {
+          // Tidak perlu router.get() lagi
+        },
+      });
+    }
+  };
+
+
+
   return (
     <AuthenticatedLayout
       user={auth.user}
@@ -66,7 +80,7 @@ export default function Index({ auth, projects, queryParams = null, success }) {
 
       <div className="py-12">
         <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-        {success && <SuccessAlert success={success} />}
+        <SuccessAlert success={success} />
 
           <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg dark:bg-gray-800">
             <div className="p-6 text-gray-900 dark:text-gray-100">
@@ -208,12 +222,11 @@ export default function Index({ auth, projects, queryParams = null, success }) {
                             >
                               <Pencil size={18} />
                             </Link>
-                            <Link
-                              href={route("project.destroy", project.id)}
+                            <button onClick={(e) => deleteProject(e, project)}
                               className="text-gray-600 transition-colors dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400"
                             >
                               <Trash2 size={18} />
-                            </Link>
+                            </button>
                             <Link className="text-gray-600 transition-colors dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100">
                               <MoreHorizontal size={18} />
                             </Link>

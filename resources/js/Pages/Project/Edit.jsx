@@ -6,26 +6,19 @@ import TextInput from "@/Components/TextInput";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link, useForm } from "@inertiajs/react";
 
-export default function Create({ auth }) {
+export default function edit({ auth, project }) {
   const { data, setData, post, processing, errors } = useForm({
     image: "",
-    name: "",
-    description: "",
-    due_date: "",
-    status: "",
+    name: project.name || "",
+    description: project.description || "",
+    due_date: project.due_date || "",
+    status: project.status || "",
+    _method: "PUT",
   });
 
   const onSubmit = (e) => {
     e.preventDefault();
-    post(route("project.store"), {
-      data: {
-        image: data.image,
-        name: data.name,
-        description: data.description,
-        due_date: data.due_date,
-        status: data.status,
-      },
-    });
+    post(route("project.update", project.id));
   };
 
   return (
@@ -34,7 +27,7 @@ export default function Create({ auth }) {
       header={
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-            Create New Project
+            Edit Project "{project.name}"
           </h2>
         </div>
       }
@@ -49,6 +42,11 @@ export default function Create({ auth }) {
               className="p-6 space-y-6 bg-white shadow-md sm:p-10 dark:bg-gray-800 rounded-2xl"
               onSubmit={onSubmit}
             >
+              {project.image_path && (
+                <div>
+                  <img src={project.image_path} alt="image" className="h-64" />
+                </div>
+              )}
               <div>
                 <InputLabel
                   htmlFor="project_image_path"
@@ -147,7 +145,7 @@ export default function Create({ auth }) {
                   className="inline-flex items-center px-4 py-2 text-sm font-medium text-white transition rounded-lg bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
                   disabled={processing}
                 >
-                  Create Project
+                  Edit Project
                 </button>
               </div>
             </form>

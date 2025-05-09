@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use App\Models\Project;
 use Illuminate\Support\Str;
@@ -96,7 +97,9 @@ class ProjectController extends Controller
      */
     public function edit(Project $project)
     {
-        //
+        return Inertia("Project/Edit", [
+            "project" => new ProjectResource($project),
+        ]);
     }
 
     /**
@@ -104,7 +107,23 @@ class ProjectController extends Controller
      */
     public function update(UpdateProjectRequest $request, Project $project)
     {
-        //
+        $data = $request->validated();
+        /** @var $image \Illuminate\Http\UploadFIle */
+        // jika ada image, upload ke storage
+        $image = $data['image'] ?? null;
+        if ($image) {
+            // Hapus gambar lama jika ada dan file-nya benar-benar ada
+            if ($project->image_path && Storage::disk('public')->exists($project->image_path)) {
+                Storage::disk('public')->deleteDirectory(dirname($project->image_path));
+            }
+
+            // Simpan gambar baru
+            $data['image_path'] = $image->store('project/' . Str::random(8), 'public');
+        }
+
+        $data['updated_by'] = Auth::id();
+        $project->update($data);
+        return to_route('project.index')->with('success', "Project \"$project->name \" updated successfully");
     }
 
     /**
@@ -112,6 +131,12 @@ class ProjectController extends Controller
      */
     public function destroy(Project $project)
     {
-        //
+        $name = $project->name;
+        $project->delete();
+        // Hapus gambar jika ada
+        if ($project->image_path && Storage::disk('public')->exists($project->image_path)) {
+            Storage::disk('public')->deleteDirectory(dirname($project->image_path));
+        }
+        return to_route('project.index')->with('success', "Project \"$project->name \" deleted successfully");
     }
 }
